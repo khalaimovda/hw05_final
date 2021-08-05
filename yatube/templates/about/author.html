@@ -1,0 +1,95 @@
+<!-- templates/about/author.html -->
+{% extends "base.html" %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block content %}
+{% load static %}
+  <div class="row">
+    <!-- Левый вспомогательный блок -->
+    <div class="col-md-3 mb-3 mt-1">
+      <div class="card">
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="h3">
+                Об авторе
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="h6 text-muted">
+                В активном поиске себя
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- Тело страницы -->
+    <div class="col-md-9">
+      <div class="card-body">
+        <div class="card-text">
+
+          <div class="row">
+            <div class="col-md-12 text-center border border-2 border-bottom-0 border-info rounded-top sty" style="background-color: #e3f2fd;">
+                <h3>Немного о себе</h3>
+            </div>
+          </div>
+
+
+
+          <div class="row">
+            <div class="col-md-12 border border-2 border-top-0 border-info rounded-bottom">
+                <br>
+                <ul>
+                    <li>Родной город: <a href="https://ru.wikipedia.org/wiki/Пенза" target="_blank" class="text-dark card-link">Пенза</a></li>
+                    <br>
+                    <li>По образованию <a href="https://www.phys.msu.ru/" target="_blank" class="text-dark card-link">физик</a></li>
+                    <br>
+                    <li>По жизни не физик)</li>
+                    <br>
+                    <li>Медленно, но уверенно двигаюсь в сторону IT...</li>
+                </ul>
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-md-12 text-center border border-2 border-bottom-0 border-info rounded-top sty" style="background-color: #e3f2fd;">
+                <h3>Мои социальные сети</h3>
+            </div>
+          </div>
+          <div class="row border border-2 border-top-0 border-info rounded-bottom">
+            <div class="col-12 col-md-4 d-flex justify-content-center align-items-center text-center">
+              <a href="https://github.com/" target="_blank" class="text-dark card-link">
+                <figure>
+                    <br>
+                    <img class="img-fluid" style="max-height: 60px;" src="{% static 'images/github.png' %}">
+                    <figcaption><span class="h5">GitHub</span></figcaption>
+                </figure>
+              </a>
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-center align-items-center text-center">
+                <a href="https://vk.com/" target="_blank"  class="card-link">
+                    <figure>
+                        <br>
+                        <img class="img-fluid" style="max-height: 60px;" src="{% static 'images/vk.png' %}">
+                        <figcaption><span class="h5" style="color:rgb(89,125,163);">ВКонтакте</span></figcaption>
+                    </figure>
+                </a>
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-center align-items-center text-center">
+                <figure>
+                    <br>
+                    <img class="img-fluid" style="max-height: 60px;" src="{% static 'images/instagram.jpg' %}">
+                    <figcaption><span class="h5" style="color: brown;">Instagram not exist</span></figcaption>
+                </figure> 
+            </div>
+          </div>
+
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %} 

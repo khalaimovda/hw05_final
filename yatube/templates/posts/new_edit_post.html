@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}
+  {% if mode == "new" %}
+    Добавить запись
+  {% elif mode == "edit" %}
+    Редактировать запись
+  {% endif %} 
+{% endblock %}
+{% block content %}
+
+  <div class="row justify-content-center">
+    <div class="col-md-12 p-5">
+      <div class="card">
+        <div class="card-header">
+          {% if mode == "new" %}
+            Добавить запись
+          {% elif mode == "edit" %}
+            Редактировать запись
+          {% endif %} 
+        </div>
+        <div class="card-body">
+
+          {% for error in form.errors %}
+            <div class="alert alert-danger" role="alert">
+              {{ error }}
+            </div>
+          {% endfor %}
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="form-group row " aria-required={{ field.field.required }}>
+                <label
+                  for="{{ field.id_for_label }}"
+                  class="col-md-3 col-form-label text-md-right">
+                  {{ field.label }}
+                  {% if field.field.required %}
+                    <span class="required">*</span>
+                  {% endif %}
+                </label>
+                <div class="col-md-8">
+                  {{ field }}
+                  {% if field.help_text %}
+                    <small
+                      id="{{ field.id_for_label }}-help"
+                      class="form-text text-muted">
+                      {{ field.help_text|safe }}
+                    </small>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">
+                      {% if mode == "new" %}
+                        Добавить
+                      {% elif mode == "edit" %}
+                        Редактировать
+                      {% endif %} 
+                    </button>
+                </div>
+            </div>
+          </form>
+        </div> <!-- card body -->
+      </div> <!-- card -->
+    </div> <!-- col -->
+  </div> <!-- row -->
+
+{% endblock %}
