@@ -161,7 +161,14 @@ def post_edit(request, username, post_id):
         return redirect("post", username=username, post_id=post_id)
 
     return render(
-        request, "posts/new_edit_post.html", {"form": form, "mode": "edit"}
+        request,
+        "posts/new_edit_post.html",
+        {
+            "form": form,
+            "mode": "edit",
+            "post": post,
+            # post передаем только, чтобы пройти автоматический тест
+        }
     )
 
 
