@@ -33,7 +33,7 @@ class ViewTests(TestCase):
             description="Описание группы не для поста",
         )
 
-        User = get_user_model() # noqa
+        User = get_user_model()  # noqa
         cls.user = User.objects.create(username="test_user")
 
         small_gif = (

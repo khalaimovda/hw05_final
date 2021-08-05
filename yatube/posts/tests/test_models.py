@@ -3,6 +3,7 @@ from django.test import TestCase
 from posts.models import Group, Post
 from django.core.cache import cache
 
+
 class GroupModelTest(TestCase):
     """Тест модели Group"""
     @classmethod
