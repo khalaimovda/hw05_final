@@ -3,7 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_http_methods
+from http import HTTPStatus
+from django.views.decorators.http import (
+    require_http_methods,
+    require_GET,
+    require_POST,
+)
 
 from .forms import CommentForm, PostForm
 from .models import Group, Post, Follow
@@ -11,22 +16,22 @@ from .models import Group, Post, Follow
 User = get_user_model()
 
 
-@require_http_methods(["GET"])
+@require_GET
 def index(request):
     """Основная страница со всеми постами."""
+    page_number = request.GET.get("page")
+    page = cache.get(key=page_number)
 
-    posts = cache.get(key="index_page")
-    if posts is None:
+    if page is None:
         posts = Post.objects.all()
+        paginator = Paginator(posts, 10)
+        page = paginator.get_page(page_number)
+
         cache.set(
-            key="index_page",
-            value=posts,
+            key=page_number,
+            value=page,
             timeout=20
         )
-
-    paginator = Paginator(posts, 10)
-    page_number = request.GET.get("page")
-    page = paginator.get_page(page_number)
 
     return render(
         request,
@@ -59,7 +64,7 @@ def new_post(request):
     )
 
 
-@require_http_methods(["GET"])
+@require_GET
 def group_posts(request, slug):
     """Посты определнной группы."""
 
@@ -72,10 +77,9 @@ def group_posts(request, slug):
     return render(request, "posts/group.html", {"group": group, "page": page})
 
 
-@require_http_methods(["GET"])
+@require_GET
 def profile(request, username):
     """Профиль пользователя."""
-
     author = get_object_or_404(User, username=username)
     posts = author.posts.all()
 
@@ -119,7 +123,7 @@ def post_view(request, username, post_id):
     return render(request, "posts/post.html", context)
 
 
-@require_http_methods(["POST"])
+@require_POST
 @login_required(redirect_field_name="login")
 def add_comment(request, username, post_id):
     """Добавление комментария."""
@@ -172,25 +176,10 @@ def post_edit(request, username, post_id):
     )
 
 
-@require_http_methods(["GET", "POST"])
-def page_not_found(request, exception):
-    return render(
-        request,
-        "misc/404.html",
-        {"path": request.path},
-        status=404
-    )
-
-
-@require_http_methods(["GET", "POST"])
-def server_error(request):
-    return render(request, "misc/500.html", status=500)
-
-
+@require_GET
 @login_required(redirect_field_name="login")
-@require_http_methods(["GET"])
 def follow_index(request):
-
+    """Лента подписок."""
     posts = Post.objects.filter(author__following__user=request.user)
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
@@ -203,7 +192,7 @@ def follow_index(request):
     )
 
 
-@require_http_methods(["GET"])
+@require_GET
 @login_required(redirect_field_name="login")
 def profile_follow(request, username):
     """Подписаться на автора."""
@@ -220,7 +209,7 @@ def profile_follow(request, username):
             request,
             "misc/403.html",
             {"path": request.path},
-            status=403
+            status=HTTPStatus.FORBIDDEN
         )
 
     Follow.objects.create(
@@ -231,7 +220,7 @@ def profile_follow(request, username):
     return redirect("profile", username=username)
 
 
-@require_http_methods(["GET"])
+@require_GET
 @login_required(redirect_field_name="login")
 def profile_unfollow(request, username):
     """Отписаться от автора."""

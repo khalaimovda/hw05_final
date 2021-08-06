@@ -11,7 +11,6 @@ class URLTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
 
         User = get_user_model()
         cls.author_user = User.objects.create_user(username="test_author_user")
@@ -78,6 +77,8 @@ class URLTests(TestCase):
         }
 
     def setUp(self):
+        cache.clear()
+
         self.guest_client = Client()
 
         self.authorized_client = Client()

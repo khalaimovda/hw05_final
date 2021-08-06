@@ -19,7 +19,6 @@ class ViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
 
         cls.group = Group.objects.create(
             title="Тестовая группа",
@@ -71,6 +70,8 @@ class ViewTests(TestCase):
         super().tearDownClass()
 
     def setUp(self):
+        cache.clear()
+
         self.post_display = {
             reverse("index"): Post.objects.count() % 10,
             reverse("group_posts", kwargs={"slug": ViewTests.group.slug}):
@@ -313,11 +314,11 @@ class CacheTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
         User = get_user_model()  # noqa
         cls.user = User.objects.create(username="test_user")
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.client.force_login(CacheTest.user)
 
@@ -349,7 +350,6 @@ class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
 
         User = get_user_model()  # noqa
         cls.user = User.objects.create(username="test_user")
@@ -380,6 +380,7 @@ class PaginatorViewsTest(TestCase):
         }
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.client.force_login(PaginatorViewsTest.user)
 
@@ -405,7 +406,6 @@ class FollowViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
 
         User = get_user_model()  # noqa
         cls.user = User.objects.create(username="user")
@@ -417,12 +417,11 @@ class FollowViewsTest(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
         self.guest_client = Client()
 
         self.authorized_client = Client()
         self.authorized_client.force_login(FollowViewsTest.user)
-
-        Follow.objects.all().delete()
 
     def test_authorized_client_can_start_following(self):
         """Авторизованный пользователь может подписаться на автора."""

@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from posts.models import Group, Post
-from django.core.cache import cache
 
 
 class GroupModelTest(TestCase):
@@ -9,7 +8,6 @@ class GroupModelTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
 
         cls.group = Group(
             title="Тестовая группа",

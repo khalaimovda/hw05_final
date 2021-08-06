@@ -18,7 +18,6 @@ class PostFormTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
 
         User = get_user_model()  # noqa
         cls.user = User.objects.create(username="test_user")
@@ -40,6 +39,7 @@ class PostFormTests(TestCase):
         super().tearDownClass()
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.client.force_login(PostFormTests.user)
 
@@ -76,7 +76,7 @@ class PostFormTests(TestCase):
 
         self.assertTrue(
             Post.objects.filter(
-                text="Пост без группы",
+                text=form_data["text"],
                 author=PostFormTests.user,
                 group=None
             ).exists()
@@ -102,7 +102,7 @@ class PostFormTests(TestCase):
 
         self.assertTrue(
             Post.objects.filter(
-                text="Пост с группой",
+                text=form_data["text"],
                 author=PostFormTests.user,
                 group=PostFormTests.group
             ).exists()
@@ -128,7 +128,7 @@ class PostFormTests(TestCase):
 
         self.assertTrue(
             Post.objects.filter(
-                text="Пост с изображением",
+                text=form_data["text"],
                 author=PostFormTests.user,
             ).exists()
         )
@@ -191,7 +191,6 @@ class CommentsFormsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cache.clear()
 
         User = get_user_model()  # noqa
         cls.user = User.objects.create(username="user")
@@ -202,16 +201,14 @@ class CommentsFormsTest(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
+
         self.guest_client = Client()
 
         self.authorized_client = Client()
         self.authorized_client.force_login(CommentsFormsTest.user)
 
-        Comment.objects.all().delete()
-
-    def test_authorized_client_can_add_comments(self):
-        """Авторизованный пользователь может добавлять комментарии."""
-        path = reverse(
+        self.path = reverse(
             "add_comment",
             kwargs={
                 "username": CommentsFormsTest.user.username,
@@ -219,13 +216,15 @@ class CommentsFormsTest(TestCase):
             }
         )
 
-        form_data = {
-            "text": "Комментарий авторизованного пользователя",
+        self.form_data = {
+            "text": "Комментарий",
         }
 
+    def test_authorized_client_can_add_comments(self):
+        """Авторизованный пользователь может добавлять комментарии."""
         self.authorized_client.post(
-            path=path,
-            data=form_data,
+            path=self.path,
+            data=self.form_data,
             follow=True
         )
 
@@ -233,27 +232,15 @@ class CommentsFormsTest(TestCase):
             Comment.objects.filter(
                 post=CommentsFormsTest.post,
                 author=CommentsFormsTest.user,
-                text=form_data["text"]
+                text=self.form_data["text"]
             ).exists()
         )
 
     def test_guest_client_cant_add_comments(self):
         """Неавторизованный пользователь не может добавлять комментарии."""
-        path = reverse(
-            "add_comment",
-            kwargs={
-                "username": CommentsFormsTest.user.username,
-                "post_id": CommentsFormsTest.post.pk,
-            }
-        )
-
-        form_data = {
-            "text": "Комментарий авторизованного пользователя",
-        }
-
         self.guest_client.post(
-            path=path,
-            data=form_data,
+            path=self.path,
+            data=self.form_data,
             follow=True
         )
 
@@ -261,6 +248,6 @@ class CommentsFormsTest(TestCase):
             Comment.objects.filter(
                 post=CommentsFormsTest.post,
                 author=CommentsFormsTest.user,
-                text=form_data["text"]
+                text=self.form_data["text"]
             ).exists()
         )
