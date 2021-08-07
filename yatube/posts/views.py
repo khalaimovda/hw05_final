@@ -3,12 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
-from http import HTTPStatus
 from django.views.decorators.http import (
     require_http_methods,
     require_GET,
     require_POST,
 )
+from django.core.exceptions import PermissionDenied
+
 
 from .forms import CommentForm, PostForm
 from .models import Group, Post, Follow
@@ -20,7 +21,8 @@ User = get_user_model()
 def index(request):
     """Основная страница со всеми постами."""
     page_number = request.GET.get("page")
-    page = cache.get(key=page_number)
+    key = f"index-page-cache-{page_number}"
+    page = cache.get(key=key)
 
     if page is None:
         posts = Post.objects.all()
@@ -28,7 +30,7 @@ def index(request):
         page = paginator.get_page(page_number)
 
         cache.set(
-            key=page_number,
+            key=key,
             value=page,
             timeout=20
         )
@@ -198,21 +200,11 @@ def profile_follow(request, username):
     """Подписаться на автора."""
     author = get_object_or_404(User, username=username)
 
-    if (
-        author == request.user
-        or Follow.objects.filter(
-            user=request.user,
-            author=author
-        ).exists()
-    ):
-        return render(
-            request,
-            "misc/403.html",
-            {"path": request.path},
-            status=HTTPStatus.FORBIDDEN
-        )
+    if author == request.user:
+        raise PermissionDenied
+        # BadRequest доступно только с версии Django 3.2
 
-    Follow.objects.create(
+    Follow.objects.get_or_create(
         user=request.user,
         author=author,
     )
